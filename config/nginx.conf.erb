@@ -57,26 +57,6 @@ http {
       client_max_body_size <%= ENV["CLIENT_MAX_BODY_SIZE"] %>;
     <% end %>
 
-    <% if ENV["FORCE_HTTPS"] && ENV["FORCE_HTTPS"] == "true" %>
-      set $cloudflare NO;
-      if ($http_cf_visitor ~* 'http') {
-        set $cloudflare YES;
-      }
-      if ($http_cf_visitor ~* '"http"') {
-        return 301 https://$host$request_uri;
-      }
-      set $cloudflare_heroku "${cloudflare}";
-      if ($http_x_forwarded_proto ~* 'http') {
-        set $cloudflare_heroku "${cloudflare_heroku}YES";
-      }
-      if ($http_x_forwarded_proto !~* 'https') {
-        set $cloudflare_heroku "${cloudflare_heroku}HTTP";
-      }
-      if ($cloudflare_heroku = NOYESHTTP) {
-        return 301 https://$host$request_uri;
-      }
-    <% end %>
-
     <% if ENV["BASIC_AUTH_USER"] && ENV["BASIC_AUTH_PASSWORD"] %>
       auth_basic "Restricted";
       auth_basic_user_file <%= "#{ENV["HOME"]}/config/htpasswd" %>;
